@@ -1,0 +1,19 @@
+{
+  "name": "@coockoo/router",
+  "version": "1.0.0",
+  "description": "Simple zero-dependency http router",
+  "main": "router.ts",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "http",
+    "router"
+  ],
+  "author": "Oleksandr Bondarchuk <alex.coockoo@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.15.30"
+  }
+}
