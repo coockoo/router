@@ -148,6 +148,6 @@ const tryCatch = async <Fn extends () => Promise<any>>(
     const res = await fn();
     return [undefined, res];
   } catch (error) {
-    return [error, undefined];
+    return [error as Error, undefined];
   }
 };
