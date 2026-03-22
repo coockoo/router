@@ -1,6 +1,6 @@
 {
   "name": "@coockoo/router",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Simple zero-dependency http router",
   "main": "router.js",
   "type": "module",

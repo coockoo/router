@@ -102,6 +102,11 @@ export const createRouter = () => {
           res.end();
           return;
         }
+        if (typeof result === 'string') {
+          res.writeHead(200, { 'content-type': 'text/plain' });
+          res.end(result);
+          return;
+        }
         res.writeHead(200, { 'content-type': 'application/json' });
         res.end(JSON.stringify(result));
         return;
