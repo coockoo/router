@@ -54,5 +54,61 @@ describe('router', () => {
     assert.equal(res.end.mock.calls[0].arguments[0], JSON.stringify(result));
   });
 
+  it('calls use middleware and then proceeds to next handler', async () => {
+    const r = createRouter();
+    const fn = mock.fn();
+    const handler = mock.fn(() => 'content');
+    r.use('/*', fn);
+    r.post('/posts', handler);
+    const req = { url: '/posts', method: 'POST' } as any;
+    const res = { writeHead: mock.fn(), end: mock.fn() };
+    await r.handle(req, res as any);
+    assert.equal(fn.mock.callCount(), 1);
+    assert.equal(handler.mock.callCount(), 1);
+  });
+
+  it('does not call use middleware if path is different', async () => {
+    const r = createRouter();
+    const fn = mock.fn();
+    const handler = mock.fn(() => 'content');
+    r.use('/nice', fn);
+    r.post('/posts', handler);
+    const req = { url: '/posts', method: 'POST' } as any;
+    const res = { writeHead: mock.fn(), end: mock.fn() };
+    await r.handle(req, res as any);
+    assert.equal(fn.mock.callCount(), 0);
+    assert.equal(handler.mock.callCount(), 1);
+  });
+
+  it('does not call handler if middleware sentHeaders', async () => {
+    const r = createRouter();
+
+    const req = { url: '/posts', method: 'POST' } as any;
+    const res = { writeHead: mock.fn(), end: mock.fn(), headersSent: false };
+
+    const fn = mock.fn(() => (res.headersSent = true));
+    const handler = mock.fn(() => 'content');
+    r.use('/*', fn);
+    r.post('/posts', handler);
+    await r.handle(req, res as any);
+    assert.equal(fn.mock.callCount(), 1);
+    assert.equal(handler.mock.callCount(), 0);
+  });
+
+  it('does not call handler if middleware is after actual handler', async () => {
+    const r = createRouter();
+
+    const req = { url: '/posts', method: 'POST' } as any;
+    const res = { writeHead: mock.fn(), end: mock.fn(), headersSent: false };
+
+    const fn = mock.fn();
+    const handler = mock.fn(() => 'content');
+    r.post('/posts', handler);
+    r.use('/*', fn);
+    await r.handle(req, res as any);
+    assert.equal(fn.mock.callCount(), 0);
+    assert.equal(handler.mock.callCount(), 1);
+  });
+
   it.todo('handles POST payload');
 });

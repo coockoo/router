@@ -8,13 +8,18 @@ import { readFile } from 'node:fs/promises';
 
                             
 
-              
-                                            
+                     
+                                                        
                   
                         
   
 
-                
+                          
+                  
+                        
+  
+
+                       
                                  
                    
                                 
@@ -61,7 +66,7 @@ export const createRouter = () => {
     const { pathname, searchParams } = parseResult;
     const pathParts = pathname.split('/').slice(1);
     for (const route of routes) {
-      if (route.method !== req.method) {
+      if (route.method && route.method !== req.method) {
         continue;
       }
       if (route.parts.at(-1) !== '*' && route.parts.length !== pathParts.length) {
@@ -97,6 +102,9 @@ export const createRouter = () => {
           res.writeHead(500).end();
           return;
         }
+        if (!route.method) {
+          continue;
+        }
         if (result === undefined) {
           res.writeHead(200);
           res.end();
@@ -117,6 +125,7 @@ export const createRouter = () => {
   };
 
   return {
+    use: method(undefined),
     get: method('GET'),
     post: method('POST'),
     put: method('PUT'),
