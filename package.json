@@ -1,12 +1,12 @@
 {
   "name": "@coockoo/router",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Simple zero-dependency http router",
   "main": "router.js",
   "type": "module",
   "scripts": {
     "build": "node --disable-warning=ExperimentalWarning ./build.js",
-    "test": "node --test"
+    "test": "node --test --test-concurrency=1"
   },
   "keywords": [
     "http",

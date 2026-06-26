@@ -27,6 +27,10 @@ import { readFile } from 'node:fs/promises';
                       
   
 
+                            
+                                         
+  
+
 export const createRouter = () => {
   const routes          = [];
 
@@ -36,14 +40,16 @@ export const createRouter = () => {
     };
   };
 
-  const serve = (pattern         , root        ) => {
+  const serve = (pattern         , root        , options               ) => {
     const handler = async (request         ) => {
       const { res, params } = request;
-      const filePath = join(cwd(), root, params.rest || 'index.html');
-      if (!filePath.startsWith(cwd())) {
-        res.writeHead(404);
-        res.end();
-        return;
+      const rootPath = join(cwd(), root);
+      const filePath = join(rootPath, params.rest || 'index.html');
+      if (!filePath.startsWith(rootPath)) {
+        return notFound(res);
+      }
+      if (options?.ignore?.(filePath)) {
+        return notFound(res);
       }
       const [error, content] = await tryCatch(() => readFile(filePath));
       if (error) {
@@ -135,6 +141,8 @@ export const createRouter = () => {
   };
 };
 
+                                                     
+
 const notFound = (res                ) => {
   res.writeHead(404).end();
   return;
@@ -149,6 +157,7 @@ const extmap                         = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
+  '.json': 'application/json',
 };
 const getContentType = (path        ) => {
   const ext = extname(path);

@@ -27,6 +27,10 @@ export type Request = {
   res: ServerResponse;
 };
 
+export type ServeOptions = {
+  ignore?: (filePath: string) => boolean;
+};
+
 export const createRouter = () => {
   const routes: Route[] = [];
 
@@ -36,14 +40,16 @@ export const createRouter = () => {
     };
   };
 
-  const serve = (pattern: Pattern, root: string) => {
+  const serve = (pattern: Pattern, root: string, options?: ServeOptions) => {
     const handler = async (request: Request) => {
       const { res, params } = request;
-      const filePath = join(cwd(), root, params.rest || 'index.html');
-      if (!filePath.startsWith(cwd())) {
-        res.writeHead(404);
-        res.end();
-        return;
+      const rootPath = join(cwd(), root);
+      const filePath = join(rootPath, params.rest || 'index.html');
+      if (!filePath.startsWith(rootPath)) {
+        return notFound(res);
+      }
+      if (options?.ignore?.(filePath)) {
+        return notFound(res);
       }
       const [error, content] = await tryCatch(() => readFile(filePath));
       if (error) {
@@ -135,6 +141,8 @@ export const createRouter = () => {
   };
 };
 
+export type Router = ReturnType<typeof createRouter>;
+
 const notFound = (res: ServerResponse) => {
   res.writeHead(404).end();
   return;
@@ -149,6 +157,7 @@ const extmap: Record<string, string> = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
+  '.json': 'application/json',
 };
 const getContentType = (path: string) => {
   const ext = extname(path);
