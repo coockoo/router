@@ -25,6 +25,8 @@ export type Request = {
   searchParams: URLSearchParams;
   req: IncomingMessage;
   res: ServerResponse;
+  /** read-only property that is used to cache parsed cookies */
+  _cookies: Map<string, string>;
 };
 
 export type ServeOptions = {
@@ -173,4 +175,18 @@ const tryCatch = async <Fn extends () => Promise<any>>(
   } catch (error) {
     return [error as Error, undefined];
   }
+};
+
+export const getCookies = (req: Request) => {
+  if (req._cookies) {
+    return req._cookies;
+  }
+  const res = new Map<string, string>();
+  const cookies = req.req.headers.cookie?.split('; ') || [];
+  for (const c of cookies) {
+    const [key, val] = c.split('=');
+    res.set(key.toLowerCase(), val);
+  }
+  req._cookies = res;
+  return res;
 };

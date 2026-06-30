@@ -6,7 +6,7 @@ Totally opinionated simple zero-dependency router.
 
 ```ts
 import { createServer } from 'node:http';
-import { createRouter } from '@coockoo/router';
+import { createRouter, getCookies } from '@coockoo/router';
 
 const router = createRouter();
 router.use('/*', allRoutesMiddleware);
@@ -22,6 +22,7 @@ const handler = (req) => {
   req.searchParams; // URLSearchParams
   req.req; // I know, I know, but still it's native IncomingMessage
   req.res; // native ServerResponse
+  const cookies = getCookies(req);
 };
 
 const server = createServer(router.handle);

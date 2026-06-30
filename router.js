@@ -25,6 +25,8 @@ import { readFile } from 'node:fs/promises';
                                 
                        
                       
+                                                                
+                                
   
 
                             
@@ -173,4 +175,18 @@ const tryCatch = async                                (
   } catch (error) {
     return [error         , undefined];
   }
+};
+
+export const getCookies = (req         ) => {
+  if (req._cookies) {
+    return req._cookies;
+  }
+  const res = new Map                ();
+  const cookies = req.req.headers.cookie?.split('; ') || [];
+  for (const c of cookies) {
+    const [key, val] = c.split('=');
+    res.set(key.toLowerCase(), val);
+  }
+  req._cookies = res;
+  return res;
 };
