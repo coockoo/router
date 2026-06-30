@@ -25,8 +25,8 @@ export type Request = {
   searchParams: URLSearchParams;
   req: IncomingMessage;
   res: ServerResponse;
-  /** read-only property that is used to cache parsed cookies */
-  _cookies: Map<string, string>;
+  /** private property that is used to cache parsed cookies */
+  _cookies?: Map<string, string>;
 };
 
 export type ServeOptions = {
