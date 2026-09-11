@@ -28,3 +28,12 @@ const handler = (req) => {
 const server = createServer(router.handle);
 server.listen(42069);
 ```
+
+## Publish
+
+```sh
+npm run build
+git commit -am "msg"
+npm version patch
+npm publish
+```

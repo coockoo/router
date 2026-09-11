@@ -2,7 +2,7 @@ import { URL } from 'node:url';
 import { cwd, stderr } from 'node:process';
 import { extname, join } from 'node:path';
 import { readFile } from 'node:fs/promises';
-                                                                 
+                                                                                      
 
                                                                                               
 
@@ -31,6 +31,7 @@ import { readFile } from 'node:fs/promises';
 
                             
                                          
+                                                      
   
 
 export const createRouter = () => {
@@ -57,7 +58,13 @@ export const createRouter = () => {
       if (error) {
         return notFound(res);
       }
-      res.writeHead(200, { 'content-type': getContentType(filePath) });
+      const headers                      = { 'content-type': getContentType(filePath) };
+      if (options?.headers) {
+        for (const [key, value] of Object.entries(options.headers(filePath))) {
+          headers[key] = value;
+        }
+      }
+      res.writeHead(200, headers);
       res.end(content);
     };
     routes.push({ method: 'GET', parts: patternToParts(pattern), handler });

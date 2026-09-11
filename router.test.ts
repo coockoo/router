@@ -77,7 +77,7 @@ describe('router', () => {
     assert.equal(response.headers.get('content-type'), 'application/json');
     const data = await response.json();
     // i was too lazy to check other fields
-    assert.equal(data.title, result.title);
+    assert.equal((data as any).title, result.title);
   });
 
   it('calls use middleware and then proceeds to next handler', async () => {
@@ -166,6 +166,16 @@ describe('router', () => {
     r.serve('/*', './testfs/client', { ignore: (path) => path.endsWith('.ts') });
     const { response } = await doFetch(r, '/types.ts');
     assert.equal(response.status, 404);
+  });
+
+  it('adds additional headers to the serve', async () => {
+    const r = createRouter();
+    const k = 'cache-control';
+    const v = 'public, max-age=31536000, immutable';
+    r.serve('/*', './testfs/client', { headers: () => ({ [k]: v }) });
+    const t = await doFetch(r, '/index.html');
+    assert.equal(t.response.status, 200);
+    assert.equal(t.response.headers.get(k), v);
   });
 
   it.todo('handles POST payload');
